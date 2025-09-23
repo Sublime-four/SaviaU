@@ -1,0 +1,9 @@
+package com.sabiau.newsapi.auth.repository;
+import com.sabiau.newsapi.auth.model.RolModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface RoleRepository extends JpaRepository<RolModel, Long> {
+    Optional<RolModel> findByName(String name);
+}
