@@ -1,8 +1,6 @@
 package com.sabiau.newsapi.auth.controller;
 
-import com.sabiau.newsapi.auth.dto.RegisterRequestDTO;
-import com.sabiau.newsapi.auth.dto.LoginRequestDTO;
-import com.sabiau.newsapi.auth.dto.UserDTO;
+import com.sabiau.newsapi.auth.dto.*;
 import com.sabiau.newsapi.auth.service.AuthService;
 import com.sabiau.newsapi.auth.service.UserSessionManager;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +47,23 @@ public class LoginController {
                 "message", "Session invalidated",
                 "sessionId", sessionId
         ));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody PasswordResetRequestDTO request) {
+        authService.initiatePasswordReset(request.getEmail());
+        return ResponseEntity.ok(Map.of("message", "Password reset email sent"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetConfirmDTO request) {
+        boolean success = authService.resetPassword(request.getToken(), request.getNewPassword());
+        if (success) {
+            return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "error", "Invalid or expired token"
+            ));
+        }
     }
 }

@@ -49,10 +49,6 @@ public class SecurityConfig {
                         // Documentación API pública
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-                        // 🔹 Permitir TODOS los métodos para empresas y productos (si quieres público)
-                        .requestMatchers("/companies", "/companies/**").permitAll()
-                        .requestMatchers("/products", "/products/**").permitAll()
-
                         // Endpoint raíz público
                         .requestMatchers("/").permitAll()
 
