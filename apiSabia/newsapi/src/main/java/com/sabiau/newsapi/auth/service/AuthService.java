@@ -1,12 +1,13 @@
 package com.sabiau.newsapi.auth.service;
 
-import com.sabiau.newsapi.auth.dto.UserDTO;
 import com.sabiau.newsapi.auth.dto.PasswordResetRequestDTO;
 import com.sabiau.newsapi.auth.dto.PasswordResetConfirmDTO;
+import com.sabiau.newsapi.auth.dto.UserDTO;
 import com.sabiau.newsapi.auth.model.PasswordResetToken;
 import com.sabiau.newsapi.auth.model.UserModel;
 import com.sabiau.newsapi.auth.repository.PasswordResetTokenRepository;
 import com.sabiau.newsapi.auth.repository.UserRepository;
+import com.sabiau.newsapi.common.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,10 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordResetTokenRepository tokenRepository;
     private final PasswordHasher passwordHasher;
     private final JwtService jwtService;
-    private final PasswordResetTokenRepository tokenRepository;
+    private final EmailService emailService;
 
    public UserDTO register(String username, String email, String password) {
             UserModel user = UserModel.builder()
@@ -48,7 +50,7 @@ public class AuthService {
                     return new LoginResponse(token, user.getUsername(), user.getEmail());
                 });
     }
-    public String requestPasswordReset(PasswordResetRequestDTO request) {
+    public void requestPasswordReset(PasswordResetRequestDTO request) {
         Optional<UserModel> userOpt = userRepository.findByEmail(request.getEmail());
 
         if (userOpt.isEmpty()) {
@@ -63,10 +65,14 @@ public class AuthService {
                 .build();
 
         tokenRepository.save(resetToken);
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
 
-
-        return token;
-    }
+        emailService.sendEmail(
+                request.getEmail(),
+                "Recuperación de contraseña",
+                "Haz clic en el siguiente enlace para restablecer tu contraseña: " + resetLink
+        );
+   }
 
     public void confirmPasswordReset(PasswordResetConfirmDTO request) {
         PasswordResetToken resetToken = tokenRepository.findByToken(request.getToken())
