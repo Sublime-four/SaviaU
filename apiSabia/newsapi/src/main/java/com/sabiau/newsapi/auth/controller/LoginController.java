@@ -23,27 +23,27 @@ public class LoginController {
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody RegisterRequestDTO request) {
         UserDTO user = authService.register(
-                request.getUsername(), request.getEmail(), request.getPassword()
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
-        return authService.login(request.getEmail(), request.getPassword())
-                .map(loginResponse -> ResponseEntity.ok(Map.of(
-                        "token", loginResponse.token(),
-                        "username", loginResponse.username(),
-                        "email", loginResponse.email(),
-                        "message", "Login successful"
-                )))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                        "error", "Invalid credentials"
-                )));
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDTO request) {
+        var loginResponse = authService.login(request.getEmail(), request.getPassword());
+
+        return ResponseEntity.ok(Map.of(
+                "token", loginResponse.token(),
+                "username", loginResponse.username(),
+                "email", loginResponse.email(),
+                "message", "Login successful"
+        ));
     }
 
     @PostMapping("/logout/{sessionId}")
-    public ResponseEntity<?> logout(@PathVariable String sessionId) {
+    public ResponseEntity<Map<String, Object>> logout(@PathVariable String sessionId) {
         sessionManager.invalidate(sessionId);
         return ResponseEntity.ok(Map.of(
                 "message", "Session invalidated",

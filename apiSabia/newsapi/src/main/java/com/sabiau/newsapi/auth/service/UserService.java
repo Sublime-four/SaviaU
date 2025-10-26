@@ -23,6 +23,10 @@ public class UserService {
 
 
     public UserDTO createUser(RegisterRequestDTO request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("El correo ya está registrado");
+        }
+
         UserModel user = new UserModel();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
