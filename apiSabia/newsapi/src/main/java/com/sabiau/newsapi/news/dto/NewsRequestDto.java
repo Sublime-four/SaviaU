@@ -12,7 +12,5 @@ import lombok.NoArgsConstructor;
 public class NewsRequestDto {
     private String title;
     private String description;
-    private String videoUrl;     // Supabase public URL
-    private String imageUrl;     // Supabase public URL
     private String referenceUrl;
 }

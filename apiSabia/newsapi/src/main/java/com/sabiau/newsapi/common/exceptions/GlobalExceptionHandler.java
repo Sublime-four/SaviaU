@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,5 +44,13 @@ public class GlobalExceptionHandler {
                 .build();
         ex.printStackTrace(); // 🔍 útil en desarrollo (puedes quitarlo en producción)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<Map<String, Object>> handleFileUploadException(FileUploadException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "error", "File upload error",
+                "message", ex.getMessage()
+        ));
     }
 }

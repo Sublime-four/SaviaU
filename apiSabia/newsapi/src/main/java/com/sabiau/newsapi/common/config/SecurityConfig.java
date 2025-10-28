@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll()
 
                         // Noticas y feeds
-                        .requestMatchers( "/news").permitAll()
+                        .requestMatchers( "/news", "/api/news").permitAll()
 
                         // Documentación API pública
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
